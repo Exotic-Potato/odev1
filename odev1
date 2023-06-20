@@ -1,0 +1,38 @@
+
+/*We need a list of products in several places in our application. This list must not contain 
+any elements that are null or products whose name is null. In a first approach,
+we wrote the following class to ensure this invariant:*/
+
+
+public record Produkt(String name, int preis) {}
+ 
+public class ProduktListe extends LinkedList<Produkt> {
+    @Override
+    public boolean add(Produkt element) {
+        if(element == null || element.name() == null) {
+            return false;
+        }
+        return super.add(element);
+    }
+ 
+    public String produktnamen() {
+        // calling Produkt.name and String.toUpperCase on every element is safe since ProduktListe.add ensures that no element is null
+        return this.stream()
+                .map(Produkt::name)
+                .map(String::toUpperCase)
+                .distinct()
+                .sorted()
+                .collect(Collectors.joining("\n"));
+    }
+
+
+//In part 2 we consider the following method:
+
+public static <T> void addAndPrintAny(Collection<T> items, T item) {
+    items.add(item);
+    // According to the Collection.add documentation, the following call to get() is safe:
+    // "If a collection refuses to add a particular element for any reason other than that it already contains the element,
+    // it must throw an exception (rather than returning false). This preserves the invariant that a collection always
+    // contains the specified element after this call returns."
+    System.out.println(items.stream().findFirst().get());
+    }
